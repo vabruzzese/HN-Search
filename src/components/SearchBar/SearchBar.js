@@ -4,21 +4,22 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { fetchStories } from '../../store/story/actions';
 import store from '../../store/rootStore';
+import { getIsFetching, getStories } from '../../store/story/reducer';
 
 export const SearchBar = () => {
+  const dispatch = store.dispatch;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  const state = store.getState();
+  const loading = getIsFetching(state);
+  const stories = getStories(state);
 
   useEffect(() => {
     let active = true;
 
     (async () => {
-      setLoading(true);
       await fetchStories({ query: query });
-      const state = store.getState();
-      const stories = state.story.stories
 
       if (active) {
         setOptions(stories.map(story => ({
@@ -27,7 +28,6 @@ export const SearchBar = () => {
           author: story.author,
           score: story.relevancy_score,
         })));
-        setLoading(false);
       }
     })();
 
@@ -46,10 +46,18 @@ export const SearchBar = () => {
     setQuery(event.target.value);
   }
 
+  const handleSelect = (event, value) => {
+    dispatch({
+      type: 'SELECT_STORY',
+      payload: value
+    });
+  }
+
   return (
     <Autocomplete
       style={{ width: 600, marginTop: 10 }}
       open={open}
+      onChange={handleSelect}
       onOpen={() => {
         setOpen(true);
       }}

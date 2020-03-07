@@ -1,45 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { fetchStories } from '../../store/story/actions';
 import store from '../../store/rootStore';
 
-function sleep(delay = 0) {
-  return new Promise(resolve => {
-    setTimeout(resolve, delay);
-  });
-}
-
 export const SearchBar = () => {
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
-  const loading = open && options.length === 0;
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let active = true;
 
-    if (!loading) {
-      return undefined;
-    }
-
     (async () => {
-      await fetchStories({ query: 'vince' });
+      setLoading(true);
+      await fetchStories({ query: query });
       const state = store.getState();
       const stories = state.story.stories
 
-      await sleep(1e3); // For demo purposes.
-
-
       if (active) {
-        setOptions(stories.map(story => ({ name: story.title })));
+        setOptions(stories.map(story => ({
+          name: story.title,
+          url: story.url,
+          author: story.author,
+          score: story.relevancy_score,
+        })));
+        setLoading(false);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [loading]);
+  }, [query]);
 
   useEffect(() => {
     if (!open) {
@@ -47,10 +42,13 @@ export const SearchBar = () => {
     }
   }, [open]);
 
+  const handleChange = (event) => {
+    setQuery(event.target.value);
+  }
+
   return (
     <Autocomplete
-      id="asynchronous-demo"
-      style={{ width: 300 }}
+      style={{ width: 600, marginTop: 10 }}
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -67,6 +65,7 @@ export const SearchBar = () => {
           {...params}
           label="Search"
           variant="outlined"
+          onChange={handleChange}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

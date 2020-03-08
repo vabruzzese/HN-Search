@@ -71,7 +71,6 @@ export const SearchBar = () => {
       renderInput={params => (
         <TextField
           {...params}
-          label="Search"
           variant="outlined"
           onChange={handleChange}
           InputProps={{

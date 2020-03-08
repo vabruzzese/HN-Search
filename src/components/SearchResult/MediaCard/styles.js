@@ -9,6 +9,7 @@ export const useStyles = makeStyles({
     },
     button: {
         marginLeft: 5,
+        backgroundColor: '#20232a',
     },
     content: {
         marginBottom: 0,
@@ -16,6 +17,6 @@ export const useStyles = makeStyles({
     },
     link: {
         textDecoration: 'none',
-        color: 'rgba(0, 0, 0, 0.87)'
+        color: '#fff'
     },
 });

@@ -20,7 +20,7 @@ export const story = (state = getInitialState(), { type, payload }) => {
                 stories: [...payload],
                 isFetching: false,
             };
-        case 'FETCH_STORIES_ERROR':
+        case 'FETCH_STORIES_FAILURE':
             return {
                 ...state,
                 isFetching: false,
